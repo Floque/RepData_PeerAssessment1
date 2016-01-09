@@ -115,12 +115,6 @@ ggplot(steps, aes(x = steps)) +
 
 ![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)\
 
-```r
-hist(steps$steps, breaks =20, col = "blue", xlab  = "Steps per day", main = "Histogram: Steps per day")
-```
-
-![](PA1_template_files/figure-html/unnamed-chunk-3-2.png)\
-
 3.Calculate and report the mean and median of the total number of steps taken per day
 
 
@@ -326,8 +320,18 @@ For this part the weekdays() function may be of some help here. Use the dataset 
 
 
 ```r
+Sys.setlocale("LC_TIME", "English")
+```
+
+```
+## [1] "English_United States.1252"
+```
+
+```r
 daytype <- weekdays(df_full$date)
 daytype <- ifelse(daytype == "Sunday"| daytype =="Saturday", "weekend", "weekday")
+
+daytype <- as.factor(daytype)
 
 df_full$daytype <- daytype
 
@@ -339,7 +343,7 @@ str(df_full)
 ##  $ steps   : num  1.717 0.3396 0.1321 0.1509 0.0755 ...
 ##  $ date    : POSIXct, format: "2012-10-01" "2012-10-01" ...
 ##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
-##  $ daytype : chr  "weekday" "weekday" "weekday" "weekday" ...
+##  $ daytype : Factor w/ 2 levels "weekday","weekend": 1 1 1 1 1 1 1 1 1 1 ...
 ```
 
 
@@ -352,30 +356,11 @@ library(ggplot2)
 interval_full <- df_full  %>%  group_by(interval, daytype) %>%
   summarize(steps = mean(steps))
 
-str(interval_full)
-```
 
-```
-## Classes 'grouped_df', 'tbl_df', 'tbl' and 'data.frame':	288 obs. of  3 variables:
-##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
-##  $ daytype : chr  "weekday" "weekday" "weekday" "weekday" ...
-##  $ steps   : num  1.717 0.3396 0.1321 0.1509 0.0755 ...
-##  - attr(*, "vars")=List of 1
-##   ..$ : symbol interval
-##  - attr(*, "drop")= logi TRUE
-```
-
-```r
-par(mfrow=c(3,1))
-
-with(subset(interval_full, daytype == "weekday"), plot(interval, steps, xlim =c(0,2500),ylim =c(0,250), col= "blue", type="l", main ="weekday"))
-
-with(subset(interval_full, daytype == "weekend"), plot(interval, steps, xlim =c(0,2400),ylim =c(0,250), col ="red",type="l", main = "weekend"))
+xyplot(steps~interval | daytype, data= interval_full, type="l", layout=c(1,2), xlab= "Interval", ylab="Number of steps")
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-11-1.png)\
-
-
 
 
 ---

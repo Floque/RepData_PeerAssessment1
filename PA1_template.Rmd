@@ -73,7 +73,6 @@ ggplot(steps, aes(x = steps)) +
   geom_histogram(fill="blue", binwidth = 1000) +
   labs(title = "Histogram: Steps per day", x = "Steps per day", y= "Frequency")
 
-hist(steps$steps, breaks =20, col = "blue", xlab  = "Steps per day", main = "Histogram: Steps per day")
 
 ```
 
@@ -190,9 +189,12 @@ For this part the weekdays() function may be of some help here. Use the dataset 
 
 
 ```{r, echo=TRUE}
+Sys.setlocale("LC_TIME", "English")
 
 daytype <- weekdays(df_full$date)
 daytype <- ifelse(daytype == "Sunday"| daytype =="Saturday", "weekend", "weekday")
+
+daytype <- as.factor(daytype)
 
 df_full$daytype <- daytype
 
@@ -209,20 +211,13 @@ library(ggplot2)
 interval_full <- df_full  %>%  group_by(interval, daytype) %>%
   summarize(steps = mean(steps))
 
-str(interval_full)
 
-par(mfrow=c(3,1))
-
-with(subset(interval_full, daytype == "weekday"), plot(interval, steps, xlim =c(0,2500),ylim =c(0,250), col= "blue", type="l", main ="weekday"))
-
-with(subset(interval_full, daytype == "weekend"), plot(interval, steps, xlim =c(0,2400),ylim =c(0,250), col ="red",type="l", main = "weekend"))
+xyplot(steps~interval | daytype, data= interval_full, type="l", layout=c(1,2), xlab= "Interval", ylab="Number of steps")
 
 
 
 
 ```
-
-
 
 
 ---
